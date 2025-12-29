@@ -1,5 +1,6 @@
 <?php require_once("head.php");
- session_start(); ?>
+ session_start(); 
+?>
 <body>
 	<div class="main-wrapper innerpagebg">
 
@@ -25,13 +26,13 @@
 								    <div class="group-img">
 										<!-- <i class="feather-mail"></i> -->
 										<i class="feather-user"></i>
-										<input type="text" name="m_username" required class="form-control" placeholder="ชื่อผู้ใช้งาน">
+										<input type="text" name="username" required class="form-control" placeholder="ชื่อผู้ใช้งาน">
 									</div>
 								</div>
 								<div class="form-group">
 									<div class="pass-group group-img">
 									    <i class="feather-lock"></i>
-										<input type="password" name="m_password" required class="form-control pass-input" placeholder="รหัสผ่านใช้งาน">
+										<input type="password" name="password" required class="form-control pass-input" placeholder="รหัสผ่านใช้งาน">
 										<!-- <span class="toggle-password feather-eye"></span> -->
 									</div>
 								</div>

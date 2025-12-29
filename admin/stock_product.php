@@ -1,39 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php $menu = "stock_product";?>
-<!-- เรียกใช้ไฟล์ haed --> 
+<?php $menu = "stock";?>
 <?php include'head.php'; ?>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
-  <!-- Navbar -->
   <?php include'nav.php'; ?>
-  <!-- /.navbar -->
+  <?php include'menu.php'; ?>
 
-  <!-- Main Sidebar Container -->
- <?php include'menu.php'; ?>
-
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="container-fluid">
-       
-         <?php       
-            include('product_stock_list.php');             
+        <a href="product.php?act=add" type="button" class="btn btn-success btn-rounded btn-sm"><i class="fas fa-plus-circle"></i> เพิ่มสินค้าใหม่</a><p>
+         <?php 
+            $act = (isset($_GET['act']) ? $_GET['act'] : '');
+            if ($act == 'add') {
+                include('product_add.php'); // ยืมหน้าเพิ่มสินค้ามาใช้
+            }elseif ($act == 'edit') {
+                include('product_edit.php'); // ยืมหน้าแก้ไขสินค้ามาใช้
+            }else{
+                include('stock_list.php'); // เรียกไฟล์ตารางสต็อกมาแสดง
+            }
           ?>
-      </div><!-- /.container-fluid -->
-    </div>
+      </div></div>
   </div>
-  <!-- /.content-wrapper -->
   <?php include'footer.php'; ?>
-  <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
-</div>
-<!-- ./wrapper -->
+    </aside>
+  </div>
 <?php include'script.php'; ?>
 </body>
 </html>

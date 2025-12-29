@@ -1,98 +1,74 @@
 <?php 
-//คิวรี่ข้อมูลมาแสดงในตาราง
+//คิวรี่ข้อมูลสมาชิก (ตัด admin ออก ถ้าต้องการดูเฉพาะลูกค้า)
     include '../condb.php';
     $stmtMem = $conn->prepare("
     SELECT * FROM tbl_member 
-    WHERE m_level = 'member'
-    ORDER BY m_id ASC #เรียงลำดับข้อมูลจากน้อยไปมาก
+    WHERE m_level != 'admin' 
+    ORDER BY m_id DESC
     ");
-      $stmtMem->execute();
-      $resultMem = $stmtMem->fetchAll();                                         
+    $stmtMem->execute();
+    $resultMem = $stmtMem->fetchAll();                                         
 ?>
-  <table id="example1" class="table table-striped dataTable">
-    <thead>
-      <tr role="row" class="info">
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 1%;">No.</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 5%;">รูป</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 10%;">username</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 10%;">password</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 15%;">ชื่อ</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 20%;">อีเมล์</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 5%;">เปิด</th>
-        <th  style="width: 10%; text-align: center;">สถานะ</th>
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 3%;">-</th>  
-        <th  tabindex="0" rowspan="1" colspan="1" style="width: 3%;">-</th> 
-      </tr>
-    </thead>
-    <tbody>
-       <?php $runNumber = 1; foreach ($resultMem as $row_member) { ?>  
-      <tr>
-        <td  align="center">
-         <?php echo $runNumber++; ?>
-        </td>
-         <td  align="center">
-        <img src="m_img/<?php echo $row_member['m_img']; ?>" id="uploaded_image" class="img-responsive img-circle " width="40">
-        </td>
-         <td>
-         <?php echo $row_member['m_username']; ?>
-        </td>
-         <td>
-         <?php echo $row_member['m_password']; ?>
-        </td>
-         <td>
-         <?php echo $row_member['m_name']; ?>
-        </td>
-         <td>
-         <?php echo $row_member['m_email']; ?>
-        </td>
-        <td>
-            <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-            <input 
-                type="checkbox"
-                class="custom-control-input"
-                id="customSwitch<?= $row_member['m_id']?>"
-                onchange="toggle_check(<?= $row_member['m_id']?>)"
-                <?php echo($row_member['m_status'] == 1)?'checked':''; ?> 
-            >
-            <label class="custom-control-label" for="customSwitch<?= $row_member['m_id']?>"></label>
+  
+  <div class="card">
+      <div class="card-header bg-navy">
+        <h3 class="card-title"><i class="fas fa-users"></i> รายการสมาชิก</h3>
+        <div class="card-tools">
+          <a href="member.php?act=add" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> เพิ่มสมาชิก</a>
         </div>
-        </td>
-        <td  align="center">
-         <small class="badge badge-success"><i class="far fa-check-circle"></i> สมาชิก</small>
-        </td>
-        <td><a href="member.php?act=edit&m_id=<?php echo $row_member['m_id']; ?>"><i class="fas fa-edit" style="color: #2E86C1;"></i></a></td>
-        <td><a href=""  onclick="confirmDelete(event, '<?php echo $row_member['m_id']; ?>')"><i class="fas fa-trash" style="color: #D35400;"></i></a></td>   
-         <?php } ?>  
-      </tr>
-    </tbody>
-  </table>
+      </div>
+      <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped dataTable">
+          <thead>
+            <tr role="row" class="info">
+              <th width="5%" class="text-center">No.</th>
+              <th width="15%" class="text-center">รหัสสมาชิก</th> <th width="10%" class="text-center">รูปภาพ</th>
+              <th width="15%">Username</th>
+              <th width="20%">ชื่อ-นามสกุล</th>
+              <th width="15%">เบอร์โทร</th>
+              <th width="10%" class="text-center">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+             <?php $i = 1; foreach ($resultMem as $row) { ?>  
+            <tr>
+              <td align="center"><?php echo $i++; ?></td>
+              <td align="center">
+                <span class="badge badge-info" style="font-size: 14px;">
+                    MEM-<?php echo str_pad($row['m_id'], 4, '0', STR_PAD_LEFT); ?>
+                </span>
+              </td>
+              <td align="center">
+                <img src="../m_img/<?php echo $row['m_img']; ?>" width="50px" style="border-radius: 50%; object-fit: cover; height: 50px;">
+              </td>
+              <td><?php echo $row['m_username']; ?></td>
+              <td><?php echo $row['m_name']; ?></td>
+              <td><?php echo $row['m_tel']; ?></td>
+              <td align="center">
+                <a href="member.php?act=edit&m_id=<?php echo $row['m_id']; ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                <a href="#" onclick="confirmDelete(event, '<?php echo $row['m_id']; ?>')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+              </td>   
+            </tr>
+            <?php } ?>  
+          </tbody>
+        </table>
+      </div>
+  </div>
+
    <script>
-       function toggle_check(m_id) {
-      // alert(m_id) //เช็คค่า user_id
-        $.ajax({
-        method: 'POST',
-        url: 'admin_update_status.php',
-        data: {
-        m_id: m_id
-        },
-        });
-      }
        function confirmDelete(event, m_id) {
-          event.preventDefault(); // หยุดการเปลี่ยนเส้นทางไปยังหน้าลบก่อน
-          Swal.fire({
-              text: "คุณแน่ใจที่จะลบข้อมูลหรือไม่?",
-              icon: "warning",
+          event.preventDefault(); 
+          swal({
+              title: "คุณแน่ใจหรือไม่?",
+              text: "คุณต้องการลบข้อมูลสมาชิกนี้ใช่หรือไม่!",
+              type: "warning",
               showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: "ตกลง",
-              cancelButtonText: "ยกเลิก"
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  // Redirect to logout.php if user confirms
-                   window.location.href = "member_del.php?m_id=" + encodeURIComponent(m_id)
-              }
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: "ตกลง, ลบเลย!",
+              cancelButtonText: "ยกเลิก",
+              closeOnConfirm: false
+          }, function(){
+              window.location.href = "member_del.php?m_id=" + m_id;
           });
       }
-
-    </script>
+   </script>

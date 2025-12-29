@@ -12,16 +12,18 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link <?php if($menu=="dashboard"){echo "active";} ?>">
+                    <a href="index.php" class="nav-link <?php if($menu=="dashboard"){echo "active";} ?>">
                         <i class="nav-icon fas fa-home"></i>
                         <p>หน้าหลัก</p>
                     </a>
                 </li>
                  <li class="nav-header">จัดการระบบ</li>
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link <?php if($menu=="order"){echo "active";} ?>">
-                        <i class="nav-icon fas fa-box-open"></i>
-                        <p>รายการ</p>
+                    <a href="order.php" class="nav-link <?php if($menu=="order"){echo "active";} ?> ">
+                        <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                        <p>รายการสั่งซื้อ</p>
+                </a>
+                </li>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -55,19 +57,19 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="dashboard.php" class="nav-link <?php if($menu=="product"){echo "active";} ?>">
+                    <a href="product.php" class="nav-link <?php if($menu=="product"){echo "active";} ?>">
                         <i class="nav-icon fas fa-cart-plus"></i>
                         <p>สินค้า</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="stock_product.php" class="nav-link <?php if($menu=="stock_product"){echo "active";} ?>">
-                        <i class="nav-icon fas fa-coins"></i>
-                        <p>สต๊อกสินค้าสินค้า</p>
+                    <a href="stock_product.php" class="nav-link <?php if($menu=="stock"){echo "active";} ?> ">
+                        <i class="nav-icon fas fa-boxes"></i> 
+                        <p>จัดการสต็อก</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="index.php" class="nav-link  <?php if($menu=="report"){echo "active";} ?>">
+                    <a href="report.php" class="nav-link  <?php if($menu=="report"){echo "active";} ?>">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>รายงานยอดขาย</p>
                     </a>

@@ -1,120 +1,95 @@
-<?php 
-if (isset($_POST['m_name'])) {
-    include '../condb.php';
-    // Include SweetAlert and jQuery
-    echo '
-    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">';
-    
-    // Retrieve form data
+<?php
+session_start();
+if (isset($_POST['m_username'])) {
+     include '../condb.php';
+     
+     // เรียกใช้ SweetAlert2
+      echo '
+      <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">';
+      
+    // รับค่า
     $m_username = $_POST['m_username'];
-    $m_password = $_POST['m_password'];
-    $m_level = $_POST['m_level'];
+    $m_password = $_POST['m_password']; // อาจจะเพิ่มการ hash password ได้ตรงนี้
     $m_name = $_POST['m_name'];
-    $m_email = $_POST['m_email'];
     $m_tel = $_POST['m_tel'];
+    $m_email = $_POST['m_email'];
     $m_address = $_POST['m_address'];
+    $m_level = $_POST['m_level'];
+    
+    // เช็ค Username ซ้ำ
+    $check = $conn->prepare("SELECT m_id FROM tbl_member WHERE m_username = :user");
+    $check->bindParam(':user', $m_username, PDO::PARAM_STR);
+    $check->execute();
 
-    // Check if username already exists
-    $stmt_check = $conn->prepare("SELECT * FROM tbl_member WHERE m_username = :m_username");
-    $stmt_check->bindParam(':m_username', $m_username, PDO::PARAM_STR);
-    $stmt_check->execute();
-    $row_count = $stmt_check->rowCount();
-
-    if ($row_count > 0) {
-        // Username already exists
+    if($check->rowCount() > 0){
         echo '<script>
              setTimeout(function() {
               swal({
                   title: "ข้อมูลซ้ำ",
-                  text: "มีชื่อผู้ใช้นี้อยู่ในระบบแล้ว",
-                  type: "error"
+                  text: "Username นี้มีผู้ใช้งานแล้ว",
+                  type: "warning"
               }, function() {
-                  window.location = "member.php"; // Redirect to admin.php
+                  window.history.back();
+              });
+            }, 100);
+        </script>';
+        exit;
+    }
+
+    // อัปโหลดรูปภาพ
+    $date1 = date("Ymd_His");
+    $numrand = (mt_rand());
+    $upload = $_FILES['m_img']['name'];
+
+    if($upload !='') { 
+        $path="../m_img/"; // ตรวจสอบ path ให้ถูก (อาจจะเป็น admin/m_img หรือ ../m_img แล้วแต่โครงสร้าง)
+        $type = strrchr($_FILES['m_img']['name'],".");
+        $newname = $numrand.$date1.$type;
+        $path_copy = $path.$newname;
+        move_uploaded_file($_FILES['m_img']['tmp_name'],$path_copy);  
+    }else{
+        $newname = 'default.png'; // รูปเริ่มต้นถ้าไม่ได้อัปโหลด
+    }
+
+    $stmt = $conn->prepare("INSERT INTO tbl_member (m_username, m_password, m_name, m_tel, m_email, m_address, m_level, m_img) 
+    VALUES (:user, :pass, :name, :tel, :email, :addr, :level, '$newname')");
+    
+    $stmt->bindParam(':user', $m_username, PDO::PARAM_STR);
+    $stmt->bindParam(':pass', $m_password, PDO::PARAM_STR);
+    $stmt->bindParam(':name', $m_name, PDO::PARAM_STR);
+    $stmt->bindParam(':tel', $m_tel, PDO::PARAM_STR);
+    $stmt->bindParam(':email', $m_email, PDO::PARAM_STR);
+    $stmt->bindParam(':addr', $m_address, PDO::PARAM_STR);
+    $stmt->bindParam(':level', $m_level, PDO::PARAM_STR);
+    
+    $result = $stmt->execute();
+    
+    if($result){
+        echo '<script>
+             setTimeout(function() {
+              swal({
+                  title: "เพิ่มสมาชิกสำเร็จ",
+                  type: "success",
+                  timer: 1000,
+                  showConfirmButton: false
+              }, function() {
+                  window.location = "member.php"; 
               });
             }, 1000);
         </script>';
-    } else {
-        // Username is unique, proceed with insertion
-        // Upload file handling...
-        $date1 = date("Ymd_His");
-        $numrand = (mt_rand());
-        $upload=$_FILES['m_img']['name'];
-
-        if($upload !='') {
-            $typefile = strrchr($_FILES['m_img']['name'],".");
-            if($typefile =='.jpg' || $typefile  =='.jpg' || $typefile  =='.png'){
-                $path="m_img/";
-                $newname = $numrand.$date1.$typefile;
-                $path_copy=$path.$newname;
-                move_uploaded_file($_FILES['m_img']['tmp_name'],$path_copy);
-
-                // SQL insertion...
-                $stmt_insert = $conn->prepare("INSERT INTO tbl_member (m_username, m_password, m_level, m_name, m_email, m_tel, m_address, m_img)
-                VALUES (:m_username, :m_password, :m_level, :m_name, :m_email, :m_tel, :m_address, '$newname')");
-                $stmt_insert->bindParam(':m_username', $m_username, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':m_password', $m_password, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':m_level', $m_level, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':m_name', $m_name, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':m_email', $m_email, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':m_tel', $m_tel, PDO::PARAM_STR);
-                $stmt_insert->bindParam(':m_address', $m_address, PDO::PARAM_STR);
-                $result = $stmt_insert->execute();
-
-                // Response handling...
-                if($result){
-                    echo '<script>
-                         setTimeout(function() {
-                          swal({
-                              title: "บันทึกข้อมูลสำเร็จ",
-                              text: "Redirecting in 1 seconds.",
-                              type: "success",
-                              timer: 1000,
-                              showConfirmButton: false
-                          }, function() {
-                              window.location = "member.php"; // Redirect to admin.php
-                          });
-                        }, 1000);
-                    </script>';
-                }else{
-                    echo '<script>
-                         setTimeout(function() {
-                          swal({
-                              title: "เกิดข้อผิดพลาด",
-                              type: "error"
-                          }, function() {
-                              window.location = "member.php"; // Redirect to admin.php
-                          });
-                        }, 1000);
-                    </script>';
-                }
-            }else{ // Invalid file type
-                echo '<script>
-                         setTimeout(function() {
-                          swal({
-                              title: "คุณอัพโหลดไฟล์ไม่ถูกต้อง",
-                              type: "error"
-                          }, function() {
-                              window.location = "member.php"; // Redirect to admin.php
-                          });
-                        }, 1000);
-                    </script>';
-            }
-        } else { // No file uploaded
-            echo '<script>
-                         setTimeout(function() {
-                          swal({
-                              title: "กรุณาเลือกไฟล์",
-                              type: "error"
-                          }, function() {
-                              window.location = "member.php"; // Redirect to admin.php
-                          });
-                        }, 1000);
-                    </script>';
-        }
-    }
-
-    $conn = null; // Close database connection
+    }else{
+       echo '<script>
+             setTimeout(function() {
+              swal({
+                  title: "เกิดข้อผิดพลาด",
+                  type: "error"
+              }, function() {
+                  window.location = "member.php";
+              });
+            }, 1000);
+        </script>';
+    } 
 }
 ?>
